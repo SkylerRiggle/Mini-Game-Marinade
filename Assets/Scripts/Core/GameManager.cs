@@ -1,8 +1,10 @@
 // Title: GameManager
 // Author: TBD
 
-using UnityEngine;
-
+/// <summary>
+/// The game manager responsible for tracking global game information
+/// and behaviour.
+/// </summary>
 public class GameManager : Singleton<GameManager> 
 { 
     
