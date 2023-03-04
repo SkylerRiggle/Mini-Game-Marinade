@@ -1,2 +1,4 @@
 # Mini-Game-Marinade
-Engineering Committee Arcade Cabinet Project - Spring 2023
+*GDA Engineering Committee Arcade Cabinet Project - Spring 2023*
+
+*Git Standards:*
