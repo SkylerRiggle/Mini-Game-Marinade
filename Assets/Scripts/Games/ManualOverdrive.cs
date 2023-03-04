@@ -1,6 +1,9 @@
 // Title: ManualOverdrive
 // Author: Skyler Riggle
 
+/// <summary>
+/// Racing time! Carefully navigate a track with the wheel, while also shifting the car into gear with the joystick.
+/// </summary>
 public class ManualOverdrive : Game
 {
     public void EndGame()
