@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// This listener directly performs a set of actions once triggered.
+/// This listener directly performs a set of actions immediately once triggered.
 /// </summary>
 public class DirectListener : GameEventListener
 {
