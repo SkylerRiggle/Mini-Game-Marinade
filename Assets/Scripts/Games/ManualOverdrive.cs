@@ -11,17 +11,17 @@ public class ManualOverdrive : Game
         throw new System.NotImplementedException();
     }
 
+    public void StartGame()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public bool EndGame()
     {
         throw new System.NotImplementedException();
     }
 
     public void Load()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void StartGame()
     {
         throw new System.NotImplementedException();
     }
