@@ -1,12 +1,15 @@
 // Title: Game
 // Author: Skyler Riggle
 
+using UnityEngine;
+
 /// <summary>
-/// The base interface class for a minigame. This allows other
+/// The base abstract class for a minigame. This allows other
 /// parts of the game to interact with a minigame without needing
 /// to know any specific game information.
 /// </summary>
-public interface Game 
+
+public abstract class Game : MonoBehaviour
 {
     /// <summary>
     /// Determines how long this minigame should run in seconds given

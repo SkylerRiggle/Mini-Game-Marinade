@@ -6,27 +6,27 @@
 /// </summary>
 public class ManualOverdrive : Game
 {
-    public int GetGameTime(int currentDifficulty)
+    public override int GetGameTime(int currentDifficulty)
     {
         throw new System.NotImplementedException();
     }
 
-    public void StartGame()
+    public override void StartGame()
     {
         throw new System.NotImplementedException();
     }
 
-    public bool EndGame()
+    public override bool EndGame()
     {
         throw new System.NotImplementedException();
     }
 
-    public void Load()
+    public override void Load()
     {
         throw new System.NotImplementedException();
     }
 
-    public void UnLoad()
+    public override void UnLoad()
     {
         throw new System.NotImplementedException();
     }
