@@ -9,6 +9,16 @@
 public interface Game 
 {
     /// <summary>
+    /// Determines how long this minigame should run in seconds given
+    /// the current difficulty.
+    /// </summary>
+    /// <param name="currentDifficulty">
+    /// The current difficulty of the game measured in the number of games completed successfully.
+    /// </param>
+    /// <returns>This minigame's runtime in seconds</returns>
+    public abstract int GetGameTime(int currentDifficulty);
+
+    /// <summary>
     /// Handles the loading process for a game.
     /// </summary>
     public abstract void Load();
@@ -25,7 +35,9 @@ public interface Game
 
     /// <summary>
     /// This method is called immediately at the end of a game's life cycle,
-    /// just before the unload function.
+    /// just before the unload function. This method also returns a boolean value
+    /// indicating whether the player has succeeded in the game or failed.
     /// </summary>
-    public abstract void EndGame();
+    /// <returns>A boolean indicating the player's victory status for the game.</returns>
+    public abstract bool EndGame();
 }

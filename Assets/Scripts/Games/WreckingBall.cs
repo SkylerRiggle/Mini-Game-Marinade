@@ -8,7 +8,12 @@
 /// </summary>
 public class WreckingBall : Game
 {
-    public void EndGame()
+    public int GetGameTime(int currentDifficulty)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool EndGame()
     {
         throw new System.NotImplementedException();
     }

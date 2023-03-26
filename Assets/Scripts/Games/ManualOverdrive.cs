@@ -6,7 +6,12 @@
 /// </summary>
 public class ManualOverdrive : Game
 {
-    public void EndGame()
+    public int GetGameTime(int currentDifficulty)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool EndGame()
     {
         throw new System.NotImplementedException();
     }
