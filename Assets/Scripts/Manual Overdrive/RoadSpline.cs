@@ -1,16 +1,23 @@
+// Title: RoadSpline
+// Author: Skyler Riggle
+
 using UnityEngine;
 
 public struct CatmullRomSegment
 {
-    public Vector2 a;
-    public Vector2 b;
-    public Vector2 c;
-    public Vector2 d;
+    public Vector3 a;
+    public Vector3 b;
+    public Vector3 c;
+    public Vector3 d;
 }
 
 public class RoadSpline : MonoBehaviour
 {
-    [SerializeField] private Vector2[] splineNodes = new Vector2[4];
+    [SerializeField] private float roadWidth = 2;
+    [SerializeField] private float roadStep = 0.1f;
+
+    [Header("Spline Parameters:")]
+    [SerializeField] private Vector3[] splineNodes = new Vector3[4];
     private CatmullRomSegment[] segments;
 
     [SerializeField] private float tension = 0.5f;
@@ -25,24 +32,26 @@ public class RoadSpline : MonoBehaviour
     private void Awake()
     {
         CacheSplineSegments();
+        GetComponent<MeshFilter>().mesh = ConstructRoadMesh();
     }
 
     private void CacheSplineSegments()
     {
         // Create the segment array.
-        segments = new CatmullRomSegment[splineNodes.Length];
+        int size = splineNodes.Length;
+        segments = new CatmullRomSegment[size];
 
         // Compute for each spline control point.
-        for (int index = 0; index < splineNodes.Length; index++)
+        for (int index = 0; index < size; index++)
         {
             // Create a new spline segment.
             CatmullRomSegment newSegment = new CatmullRomSegment();
 
             // Get the relevant control points.
-            Vector2 P0 = CircularIndexing(index, -1);
-            Vector2 P1 = splineNodes[index];
-            Vector2 P2 = CircularIndexing(index, 1);
-            Vector2 P3 = CircularIndexing(index, 2);
+            Vector3 P0 = splineNodes[(index + size - 1) % size];
+            Vector3 P1 = splineNodes[index];
+            Vector3 P2 = splineNodes[(index + 1) % size];
+            Vector3 P3 = splineNodes[(index + 2) % size];
 
             // Calculate and store the segment vector constants.
             newSegment.a = P1;
@@ -74,19 +83,24 @@ public class RoadSpline : MonoBehaviour
         float step3 = step2 * step;
 
         // Return the resulting spline point in world space.
-        return SplineToWorldSpace(
-            segment.a + (segment.b * step) + (segment.c * step2) + (segment.d * step3)
-        );
+        return transform.position +
+            segment.a + (segment.b * step) + (segment.c * step2) + (segment.d * step3);
     }
 
-    private Vector2 CircularIndexing(int index, int offset)
+    private Mesh ConstructRoadMesh()
     {
-        if (offset >= 0)
+        // Construct a new road mesh object.
+        Mesh roadMesh = new Mesh();
+
+        float step = 0;
+        while (step <= splineNodes.Length)
         {
-            return splineNodes[(index + offset) % splineNodes.Length];
+            
+            step += roadStep;
         }
 
-        return splineNodes[index];
+        // Return the resulting mesh.
+        return roadMesh;
     }
 
     private void OnValidate() => CacheSplineSegments();
@@ -95,15 +109,15 @@ public class RoadSpline : MonoBehaviour
     {
         // Draw the influencing nodes.
         Gizmos.color = nodeColor;
-        foreach (Vector2 node in splineNodes)
+        foreach (Vector3 node in splineNodes)
         {
-            Gizmos.DrawSphere(SplineToWorldSpace(node), nodeRadius);
+            Gizmos.DrawSphere(transform.position + node, nodeRadius);
         }
 
         // Draw a preview of the spline.
         Gizmos.color = traceColor;
         float step = traceStep;
-        Vector3 pointA = SplineToWorldSpace(splineNodes[0]);
+        Vector3 pointA = transform.position + splineNodes[0];
         Vector3 pointB;
         while (step <= splineNodes.Length)
         {
@@ -112,14 +126,5 @@ public class RoadSpline : MonoBehaviour
             pointA = pointB;
             step += traceStep;
         }
-    }
-
-    private Vector3 SplineToWorldSpace(Vector2 splinePoint)
-    {
-        return transform.position + new Vector3(
-            splinePoint.x,
-            0,
-            splinePoint.y
-        );
     }
 }
