@@ -45,12 +45,16 @@ public class RoadSpline : MonoBehaviour
         }
     }
 
+    public Vector3 SampleSpline(float stepValue)
+    {
+        return Vector3.one;
+    }
+
     private void OnValidate() => ComputeSplineWeights();
 
     private void OnDrawGizmosSelected() 
     {
-        float step, step3, beta, beta3;
-        Vector3 drawOrigin, linePosition;
+        Vector3 drawOrigin;
         SplineNode currentNode, nextNode;
         for (int index = 0; index < splineNodes.Length; index++)
         {
@@ -65,29 +69,16 @@ public class RoadSpline : MonoBehaviour
 
             // Draw node weights.
             Gizmos.color = weightColor;
-            linePosition = RelativeSplinePosition(currentNode.weightVector, drawOrigin);
-            Gizmos.DrawLine(drawOrigin, linePosition);
+            Gizmos.DrawLine(drawOrigin, RelativeSplinePosition(currentNode.weightVector, drawOrigin));
+        }
 
-            // Draw the spline curvature preview.
-            Gizmos.color = traceColor;
-            step = 0;
-            beta = 1;
-            while (step < 1.0f)
-            {
-                step3 = Mathf.Pow(step, 3);
-                beta3 = Mathf.Pow(beta, 3);
-
-                linePosition = new Vector3(
-                    0,
-                    0,
-                    0
-                );
-                Gizmos.DrawLine(drawOrigin, linePosition);
-
-                drawOrigin = linePosition;
-                step += traceStep;
-                beta = 1 - step;
-            }
+        // Draw the spline curvature preview.
+        Gizmos.color = traceColor;
+        float step = 0;
+        while (step <= splineNodes.Length)
+        {
+            
+            step += traceStep;
         }
     }
 
