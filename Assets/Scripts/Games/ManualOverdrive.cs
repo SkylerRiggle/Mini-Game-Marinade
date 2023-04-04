@@ -1,11 +1,18 @@
 // Title: ManualOverdrive
 // Author: Skyler Riggle
 
+using UnityEngine;
+
 /// <summary>
 /// Racing time! Carefully navigate a track with the wheel, while also shifting the car into gear with the joystick.
 /// </summary>
 public class ManualOverdrive : Game
 {
+    /// <summary>
+    /// This parent game object holds all of this game's non-managerial assets.
+    /// </summary>
+    [SerializeField] private GameObject gameAssetParent = null;
+
     public override int GetGameTime(int currentDifficulty)
     {
         throw new System.NotImplementedException();
@@ -23,11 +30,13 @@ public class ManualOverdrive : Game
 
     public override void Load()
     {
-        throw new System.NotImplementedException();
+        // Enable our game's assets.
+        gameAssetParent.SetActive(true);
     }
 
     public override void UnLoad()
     {
-        throw new System.NotImplementedException();
+        // Disable our game's assets.
+        gameAssetParent.SetActive(false);
     }
 }
