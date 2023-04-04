@@ -100,11 +100,24 @@ public class RoadSpline : MonoBehaviour
         int[] triangles = new int[3 * numVerts];
 
         // Populate vertex and index data.
+        float step = 0;
         for (int index = 0; index < numVerts; index++)
         {
-            triangles[index] = index;
-            triangles[index + 1] = (index + 1) % numVerts;
-            triangles[index + 2] = (index + 2) % numVerts;
+            if (index % 2 == 0)
+            {
+                vertices[index] = Vector3.forward * index + Vector3.right;
+            }
+            else
+            {
+                vertices[index] = Vector3.forward * (index - 1) + Vector3.left;
+            }
+
+            int triangleIndex = index * 3;
+            triangles[triangleIndex] = index;
+            triangles[triangleIndex + 1] = (index + 1) % numVerts;
+            triangles[triangleIndex + 2] = (index + 2) % numVerts;
+
+            step += roadStep;
         }
 
         // Assign the new mesh data.
