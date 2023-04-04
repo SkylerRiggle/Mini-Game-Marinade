@@ -14,6 +14,7 @@ public struct CatmullRomSegment
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class RoadSpline : MonoBehaviour
 {
+    [Header("Road Mesh Parameters:")]
     [SerializeField] private float roadWidth = 2;
     [SerializeField] private float roadStep = 0.1f;
 
@@ -105,19 +106,18 @@ public class RoadSpline : MonoBehaviour
         {
             if (index % 2 == 0)
             {
-                vertices[index] = Vector3.forward * index + Vector3.right;
+                vertices[index] = SampleNormal(step, false) * roadWidth;
             }
             else
             {
-                vertices[index] = Vector3.forward * (index - 1) + Vector3.left;
+                vertices[index] = SampleNormal(step, true) * roadWidth;
+                step += roadStep;
             }
 
             int triangleIndex = index * 3;
             triangles[triangleIndex] = index;
             triangles[triangleIndex + 1] = (index + 1) % numVerts;
             triangles[triangleIndex + 2] = (index + 2) % numVerts;
-
-            step += roadStep;
         }
 
         // Assign the new mesh data.
@@ -128,6 +128,22 @@ public class RoadSpline : MonoBehaviour
 
         // Return the resulting mesh.
         return roadMesh;
+    }
+
+    private Vector3 SampleNormal(float step, bool flip)
+    {
+        // Extrapolate the index given the step value.
+        int index = Mathf.FloorToInt(step);
+
+        // Get the relevant spline segment.
+        CatmullRomSegment segment = segments[index];
+
+        // Calculate the tangent of the segment at the sample step.
+        Vector3 tangent = segment.b + (2 * segment.c * step) + (3 * segment.d * step * step);
+        tangent.Normalize();
+        
+        // Return the normal vector.
+        return SampleSpline(step) + (flip ? tangent : -tangent);
     }
 
     private void OnValidate() => CacheSplineSegments();
