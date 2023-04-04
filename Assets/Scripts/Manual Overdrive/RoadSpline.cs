@@ -11,6 +11,7 @@ public struct CatmullRomSegment
     public Vector3 d;
 }
 
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class RoadSpline : MonoBehaviour
 {
     [SerializeField] private float roadWidth = 2;
@@ -91,13 +92,26 @@ public class RoadSpline : MonoBehaviour
     {
         // Construct a new road mesh object.
         Mesh roadMesh = new Mesh();
+        roadMesh.name = gameObject.name;
 
-        float step = 0;
-        while (step <= splineNodes.Length)
+        // Create a vertex and index array for the new mesh.
+        int numVerts = Mathf.FloorToInt(splineNodes.Length / roadStep) * 2;
+        Vector3[] vertices = new Vector3[numVerts];
+        int[] triangles = new int[3 * numVerts];
+
+        // Populate vertex and index data.
+        for (int index = 0; index < numVerts; index++)
         {
-            
-            step += roadStep;
+            triangles[index] = index;
+            triangles[index + 1] = (index + 1) % numVerts;
+            triangles[index + 2] = (index + 2) % numVerts;
         }
+
+        // Assign the new mesh data.
+        roadMesh.SetVertices(vertices);
+        roadMesh.SetTriangles(triangles, 0);
+        roadMesh.RecalculateBounds();
+        roadMesh.RecalculateNormals();
 
         // Return the resulting mesh.
         return roadMesh;
