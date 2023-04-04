@@ -106,11 +106,11 @@ public class RoadSpline : MonoBehaviour
         {
             if (index % 2 == 0)
             {
-                vertices[index] = SampleNormal(step, false) * roadWidth;
+                vertices[index] = SampleNormal(step, false);
             }
             else
             {
-                vertices[index] = SampleNormal(step, true) * roadWidth;
+                vertices[index] = SampleNormal(step, true);
                 step += roadStep;
             }
 
@@ -141,9 +141,11 @@ public class RoadSpline : MonoBehaviour
         // Calculate the tangent of the segment at the sample step.
         Vector3 tangent = segment.b + (2 * segment.c * step) + (3 * segment.d * step * step);
         tangent.Normalize();
-        
+
+        Vector3 normal = Vector3.Cross(tangent, Vector3.up);
+
         // Return the normal vector.
-        return SampleSpline(step) + (flip ? tangent : -tangent);
+        return SampleSpline(step) + (flip ? -normal : normal) * roadWidth;
     }
 
     private void OnValidate() => CacheSplineSegments();
