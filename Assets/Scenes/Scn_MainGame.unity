@@ -543,13 +543,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   splineNodes:
-  - nodePosition: {x: 1, y: 0}
-  - nodePosition: {x: -1, y: 0}
-  - nodePosition: {x: 0, y: 2}
-  weightScale: 1
+  - {x: 0, y: 0}
+  - {x: 3.3, y: 4.3}
+  - {x: 10, y: 0}
+  - {x: 10.84, y: -5}
+  - {x: 5.35, y: -6.99}
+  - {x: 2, y: -2}
+  tension: 0.75
   nodeRadius: 0.25
+  traceStep: 0.1
   nodeColor: {r: 1, g: 0, b: 0, a: 1}
-  weightColor: {r: 0, g: 1, b: 0, a: 1}
+  traceColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &3635371100519708117
 PrefabInstance:
   m_ObjectHideFlags: 0
