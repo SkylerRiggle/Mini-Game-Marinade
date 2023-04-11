@@ -130,7 +130,7 @@ public class RoadSpline : MonoBehaviour
         return roadMesh;
     }
 
-    private Vector3 SampleNormal(float step, bool flip)
+    public Vector3 SampleTangent(float step)
     {
         // Extrapolate the index given the step value.
         int index = Mathf.FloorToInt(step);
@@ -142,7 +142,14 @@ public class RoadSpline : MonoBehaviour
         Vector3 tangent = segment.b + (2 * segment.c * step) + (3 * segment.d * step * step);
         tangent.Normalize();
 
-        Vector3 normal = Vector3.Cross(tangent, Vector3.up);
+        // Return the resulting tangent vector.
+        return tangent;
+    }
+
+    private Vector3 SampleNormal(float step, bool flip)
+    {
+        // Calculate the normal vector as the cross porduct of the up vector and tangent.
+        Vector3 normal = Vector3.Cross(SampleTangent(step), Vector3.up);
 
         // Return the normal vector.
         return SampleSpline(step) + (flip ? -normal : normal) * roadWidth;
