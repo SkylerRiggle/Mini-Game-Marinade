@@ -3,6 +3,7 @@
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// The game manager responsible for tracking global game information
@@ -10,35 +11,22 @@ using System.Collections;
 /// </summary>
 public class GameManager : Singleton<GameManager> 
 {
-    // Static Constant Values
-    private const int DEFAULT_GAMES_COMPLETED = 0;
-    private const float DEFAULT_TIMER_COUNT = 0;
+    // Game Control Values
+    private int gamesCompleted;
+    private int playerLives;
     private const int DEFAULT_LIVES_COUNT = 3;
 
-    /// <summary>
-    /// The available minigame's to be played.
-    /// </summary>
+
+    // Timer Values
+    private Coroutine currentGameTimer = null;
+    private float _currentTime = 0;
+    public float currentTime { get { return _currentTime; } }
+
+    // Game Tracking Values
     [SerializeField] private Game[] availableGames = new Game[0];
-
-    /// <summary>
-    /// The current game being played.
-    /// </summary>
+    private Queue<int> gameQueue = new Queue<int>();
+    private int lastRandomIndex = 0;
     private Game currentGame;
-
-    /// <summary>
-    /// The number of minigames completed by the player [ONLY successful completions]
-    /// </summary>
-    private int gamesCompleted = DEFAULT_GAMES_COMPLETED;
-
-    /// <summary>
-    /// The player's remaining lives.
-    /// </summary>
-    private int playerLives = DEFAULT_LIVES_COUNT;
-
-    /// <summary>
-    /// The amount of time remaining for the current game.
-    /// </summary>
-    private float currentTime = DEFAULT_TIMER_COUNT;
 
     /// <summary>
     /// Starts the minigame gameplay loop.
@@ -46,58 +34,83 @@ public class GameManager : Singleton<GameManager>
     public void StartGame()
     {
         // Ensure that the default game values are set.
-        gamesCompleted = DEFAULT_GAMES_COMPLETED;
+        gamesCompleted = 0;
         playerLives = DEFAULT_LIVES_COUNT;
-        currentTime = DEFAULT_TIMER_COUNT;
+        _currentTime = 0;
+
+        // Minor error checking to ensure that a game can be played.
+        if (availableGames.Length == 0)
+        {
+            throw new System.Exception("GAME MANAGER HAS NO GAMES!");
+        }
+
+        // Initialize the game queue.
+        GetGameQueue();
 
         // Load the first game.
         LoadNewGame();
     }
 
     /// <summary>
+    /// Stores a random queue of game indicies such that the same game may never 
+    /// be played twice, and all games are played at least once in a queue.
+    /// </summary>
+    private void GetGameQueue()
+    {
+        // Initialize a random starting point from an incremental offset.
+        int offset = Random.Range(1, availableGames.Length - 1);
+        int index = (lastRandomIndex + offset) % availableGames.Length;
+
+        // Place the game indexes into the queue.
+        for (int _i = 0; _i < availableGames.Length; _i++)
+        {
+            gameQueue.Enqueue(index);
+            index = (index + offset) % availableGames.Length;
+        }
+    }
+
+    /// <summary>
     /// Updates the current game in favor of a new one.
     /// </summary>
-    private void LoadNewGame()
+    public void LoadNewGame()
     {
         // Stop the current timer.
-        StopCoroutine(GameTimer());
+        if (currentGameTimer != null)
+        {
+            StopCoroutine(currentGameTimer);
+        }
 
         // End the current game and handle the player's success status.
         if (currentGame != null)
         {
-            if (!HandleSuccessState(currentGame.EndGame(), false))
+            if (HandleSuccessState(currentGame.EndGame()))
             {
                 return;
             }
             currentGame.UnLoad();
         }
 
-        // Gather a new minigame that does not match the current game.
-        int gameIndex;
-        do
+        // Ensure that the queue is not empty.
+        if (gameQueue.Count == 0)
         {
-            gameIndex = Random.Range(0, availableGames.Length);
-        } while (availableGames[gameIndex].Equals(currentGame));
+            GetGameQueue();
+        }
 
-        // Assign the new minigame as the current.
-        currentGame = availableGames[gameIndex];
-
-        // Get the new game timer value.
-        currentTime = currentGame.GetGameTime(gamesCompleted);
+        // Gather a new game from the queue.
+        currentGame = availableGames[0];
 
         // Start the game and the timer.
         currentGame.Load();
         currentGame.StartGame();
-        StartCoroutine(GameTimer());
+        currentGameTimer = StartCoroutine(GameTimer(currentGame.GetGameTime(gamesCompleted)));
     }
 
     /// <summary>
     /// Handles the success and failure states for a minigame.
     /// </summary>
     /// <param name="isVictorious">A boolean indicating the success status for the current game.</param>
-    /// <param name="canLoad">Indicates if this method is allowed to load a new game on failure.</param>
-    /// <returns>A boolean indicating whether the game can continue.</returns>
-    private bool HandleSuccessState(bool isVictorious, bool canLoad)
+    /// <returns>A boolean corresponding to whether the game has concluded (player has died).</returns>
+    private bool HandleSuccessState(bool isVictorious)
     {
         // Handle the success and failure case.
         if (isVictorious)
@@ -112,29 +125,12 @@ public class GameManager : Singleton<GameManager>
             if (playerLives == 0)
             {
                 EndGame();
-                return false;
-            }
-
-            // Otherwise, transition to the next game.
-            if (canLoad)
-            {
-                LoadNewGame();
+                return true;
             }
         }
 
-        // Return a status that the game has not ended.
-        return true;
+        return false;
     }
-
-    /// <summary>
-    /// Called when a game has been beaten.
-    /// </summary>
-    public void GameSuccess() => HandleSuccessState(true, true);
-
-    /// <summary>
-    /// Called when a game has been failed.
-    /// </summary>
-    public void GameFailure() => HandleSuccessState(false, true);
 
     /// <summary>
     /// Handle the ending of the minigame gameplay loop.
@@ -142,25 +138,27 @@ public class GameManager : Singleton<GameManager>
     private void EndGame()
     {
         // TODO: HIGHSCORE & NEXT SCENE
+        Debug.Log("Game Over uwu");
     }
 
     /// <summary>
-    /// Handles the current game's timer.
+    /// Handles the timer for the current game.
     /// </summary>
-    private IEnumerator GameTimer()
+    /// <param name="runTime">The initial start time for the game.</param>
+    private IEnumerator GameTimer(int runTime)
     {
+        // Start the timer with the default value.
+        _currentTime = runTime;
+        
         // Decrement the timer till it reads zero or less.
-        while (currentTime > 0)
+        while (_currentTime > 0)
         {
-            currentTime -= Time.deltaTime;
+            _currentTime -= Time.deltaTime;
             yield return null;
         }
 
         // Move on to the next game.
         LoadNewGame();
-
-        // Stop the current coroutine.
-        StopCoroutine(GameTimer());
         yield return null;
     }
 }
