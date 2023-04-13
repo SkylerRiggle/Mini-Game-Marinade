@@ -11,16 +11,16 @@ using System.Collections.Generic;
 /// </summary>
 public class GameManager : Singleton<GameManager> 
 {
-    // Static Constant Values
-    private const int DEFAULT_GAMES_COMPLETED = 0;
-    private const float DEFAULT_TIMER_COUNT = 0;
-    private const int DEFAULT_LIVES_COUNT = 3;
-
     // Game Control Values
     private int gamesCompleted;
     private int playerLives;
-    private Coroutine currentGameTimer;
-    private float currentTime;
+    private const int DEFAULT_LIVES_COUNT = 3;
+
+
+    // Timer Values
+    private Coroutine currentGameTimer = null;
+    private float _currentTime = 0;
+    public float currentTime { get { return _currentTime; } }
 
     // Game Tracking Values
     [SerializeField] private Game[] availableGames = new Game[0];
@@ -34,9 +34,9 @@ public class GameManager : Singleton<GameManager>
     public void StartGame()
     {
         // Ensure that the default game values are set.
-        gamesCompleted = DEFAULT_GAMES_COMPLETED;
+        gamesCompleted = 0;
         playerLives = DEFAULT_LIVES_COUNT;
-        currentTime = DEFAULT_TIMER_COUNT;
+        _currentTime = 0;
 
         // Minor error checking to ensure that a game can be played.
         if (availableGames.Length == 0)
@@ -99,13 +99,10 @@ public class GameManager : Singleton<GameManager>
         // Gather a new game from the queue.
         currentGame = availableGames[0];
 
-        // Get the new game timer value.
-        currentTime = currentGame.GetGameTime(gamesCompleted);
-
         // Start the game and the timer.
         currentGame.Load();
         currentGame.StartGame();
-        currentGameTimer = StartCoroutine(GameTimer());
+        currentGameTimer = StartCoroutine(GameTimer(currentGame.GetGameTime(gamesCompleted)));
     }
 
     /// <summary>
@@ -145,14 +142,18 @@ public class GameManager : Singleton<GameManager>
     }
 
     /// <summary>
-    /// Handles the current game's timer.
+    /// Handles the timer for the current game.
     /// </summary>
-    private IEnumerator GameTimer()
+    /// <param name="runTime">The initial start time for the game.</param>
+    private IEnumerator GameTimer(int runTime)
     {
+        // Start the timer with the default value.
+        _currentTime = runTime;
+        
         // Decrement the timer till it reads zero or less.
-        while (currentTime > 0)
+        while (_currentTime > 0)
         {
-            currentTime -= Time.deltaTime;
+            _currentTime -= Time.deltaTime;
             yield return null;
         }
 
