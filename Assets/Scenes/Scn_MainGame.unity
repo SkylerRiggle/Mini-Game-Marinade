@@ -164,6 +164,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 153827997}
+  - component: {fileID: 153827998}
   m_Layer: 0
   m_Name: Roads
   m_TagString: Untagged
@@ -187,6 +188,18 @@ Transform:
   m_Father: {fileID: 69185256}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &153827998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153827996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0aa5909c28a3c84c9829fa4638d85de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &445691680
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,6 +245,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameAssetParent: {fileID: 69185255}
+  roadManager: {fileID: 153827998}
+  difficultyCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 30
+      inSlope: -15.135516
+      outSlope: -15.135516
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.0110516595
+    - serializedVersion: 3
+      time: 1
+      value: 20
+      inSlope: -0.0017532151
+      outSlope: -0.0017532151
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  difficultyWeight: 0.01
+  difficultyBias: 0
 --- !u!1 &694471855
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,16 +584,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00696e30885921049a19d109759d4b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roadWidth: 1
-  roadStep: 0.1
-  splineNodes:
-  - {x: 0, y: 0, z: 0}
-  - {x: 10, y: 0, z: 5}
-  - {x: 15, y: 0, z: 0}
-  - {x: 5, y: 0, z: -5}
   tension: 1
+  sampleStep: 0.1
+  roadRadius: 1
+  splineNodes:
+  - {x: -10, y: -3}
+  - {x: 0, y: 5}
+  - {x: 15, y: -3}
+  - {x: 10, y: -8}
+  - {x: 0, y: -8}
   nodeRadius: 0.25
-  traceStep: 0.1
   nodeColor: {r: 1, g: 0, b: 0, a: 1}
   traceColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!23 &2133120622
@@ -576,7 +616,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ae4e52d02cfebce4d9a87287ef6d7821, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

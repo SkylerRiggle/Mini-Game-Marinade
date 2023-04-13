@@ -3,180 +3,195 @@
 
 using UnityEngine;
 
+/// <summary>
+/// A data structure used to save spline segment constants.
+/// </summary>
 public struct CatmullRomSegment
 {
-    public Vector3 a;
-    public Vector3 b;
-    public Vector3 c;
-    public Vector3 d;
+    public Vector2 a;
+    public Vector2 b;
+    public Vector2 c;
+    public Vector2 d;
 }
 
+/// <summary>
+/// This class handles the construction of both the mathematical 
+/// representation of a catmull rom spline and a road mesh from 
+/// this spline.
+/// </summary>
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class RoadSpline : MonoBehaviour
+public class RoadSpline : MonoBehaviour 
 {
-    [Header("Road Mesh Parameters:")]
-    [SerializeField] private float roadWidth = 2;
-    [SerializeField] private float roadStep = 0.1f;
-
-    [Header("Spline Parameters:")]
-    [SerializeField] private Vector3[] splineNodes = new Vector3[4];
-    private CatmullRomSegment[] segments;
-
     [SerializeField] private float tension = 0.5f;
+    [SerializeField] private float sampleStep = 0.1f;
+    private CatmullRomSegment[] splineSegments;
+    [SerializeField] private float roadRadius = 1;
 
-    [Header("Gizmos Parameters:")]
+    [Header("Gizmo Parameters:")]
+    [SerializeField] private Vector2[] splineNodes = new Vector2[0];
     [SerializeField] private float nodeRadius = 0.25f;
-    [SerializeField] private float traceStep = 0.1f;
-
     [SerializeField] private Color nodeColor = Color.red;
     [SerializeField] private Color traceColor = Color.green;
 
-    private void Awake()
+    private void Awake() 
     {
-        CacheSplineSegments();
-        GetComponent<MeshFilter>().mesh = ConstructRoadMesh();
+        CacheSplineConstants();
+        GetComponent<MeshFilter>().mesh = GenerateRoadMesh();
     }
 
-    private void CacheSplineSegments()
+    /// <summary>
+    /// Compute and store the line segment constants for the spline.
+    /// </summary>
+    private void CacheSplineConstants()
     {
-        // Create the segment array.
-        int size = splineNodes.Length;
-        segments = new CatmullRomSegment[size];
+        // Create an array to cache the segment constants.
+        int numNodes = splineNodes.Length;
+        splineSegments = new CatmullRomSegment[numNodes];
 
-        // Compute for each spline control point.
-        for (int index = 0; index < size; index++)
+        for (int index = 0; index < numNodes; index++)
         {
-            // Create a new spline segment.
-            CatmullRomSegment newSegment = new CatmullRomSegment();
+            // Create a new segment structure for this segment.
+            CatmullRomSegment segment = new CatmullRomSegment();
 
-            // Get the relevant control points.
-            Vector3 P0 = splineNodes[(index + size - 1) % size];
-            Vector3 P1 = splineNodes[index];
-            Vector3 P2 = splineNodes[(index + 1) % size];
-            Vector3 P3 = splineNodes[(index + 2) % size];
+            // Get the segment's control points.
+            Vector2 P0 = splineNodes[(index - 1 + numNodes) % numNodes];
+            Vector2 P1 = splineNodes[index];
+            Vector2 P2 = splineNodes[(index + 1) % numNodes];
+            Vector2 P3 = splineNodes[(index + 2) % numNodes];
 
-            // Calculate and store the segment vector constants.
-            newSegment.a = P1;
-            newSegment.b = tension * (P2 - P0);
-            newSegment.c = 2 * tension * P0 + (tension - 3) * P1 + 
-            (3 - 2 * tension) * P2 - tension * P3;
-            newSegment.d = -tension * P0 + (2 - tension) * P1 + 
-            (tension - 2) * P2 + tension * P3;
+            // Compute the segment constants given its control points.
+            segment.a = P1;
+            segment.b = tension * (P2 - P0);
+            segment.c = (tension * ((2 * P0) - P3)) + 
+            ((tension - 3) * P1) + ((3 - (2 * tension)) * P2);
+            segment.d = (tension * (P3 - P0)) + 
+            ((2 - tension) * P1) + ((tension - 2) * P2);
 
-            // Store the segment into the array.
-            segments[index] = newSegment;
+            // Store the segment's constants.
+            splineSegments[index] = segment;
         }
     }
 
-    public Vector3 SampleSpline(float step)
+    private Mesh GenerateRoadMesh()
     {
-        // Ensure that the step value falls with the legal range.
-        step = step % splineNodes.Length;
-
-        // Extrapolate the index given the step value.
-        int index = Mathf.FloorToInt(step);
-
-        // Get the associated cached segment.
-        CatmullRomSegment segment = segments[index];
-
-        // Calculate the powers of t.
-        step %= 1;
-        float step2 = step * step;
-        float step3 = step2 * step;
-
-        // Return the resulting spline point in world space.
-        return transform.position +
-            segment.a + (segment.b * step) + (segment.c * step2) + (segment.d * step3);
-    }
-
-    private Mesh ConstructRoadMesh()
-    {
-        // Construct a new road mesh object.
+        // Create a new mesh object for the road.
         Mesh roadMesh = new Mesh();
-        roadMesh.name = gameObject.name;
+        roadMesh.name = transform.name;
 
-        // Create a vertex and index array for the new mesh.
-        int numVerts = Mathf.FloorToInt(splineNodes.Length / roadStep) * 2;
-        Vector3[] vertices = new Vector3[numVerts];
-        int[] triangles = new int[3 * numVerts];
+        // Generate the vertex, uv, and index arrays.
+        int sampleCount = 2 * Mathf.RoundToInt(splineNodes.Length / sampleStep);
+        Vector3[] verticies = new Vector3[sampleCount];
+        Vector2[] uvs = new Vector2[sampleCount];
+        int[] indicies = new int[sampleCount * 3];
 
-        // Populate vertex and index data.
-        float step = 0;
-        for (int index = 0; index < numVerts; index++)
+        float t = 0;
+        int triangleIndex, currentV = 0;
+        Vector3 samplePosition = Vector3.zero, sampleNormal = Vector3.zero;
+        for (int vertIndex = 0; vertIndex < sampleCount; vertIndex++)
         {
-            if (index % 2 == 0)
+            // Alternate between each triangle in a road quad mesh.
+            if ((vertIndex % 2) == 0)
             {
-                vertices[index] = SampleNormal(step, false);
+                // Calculate the normal and sample position, then assign it to a vertex.
+                samplePosition = SampleSpline(t);
+                sampleNormal = SampleNormal(t) * roadRadius;
+                verticies[vertIndex] = RelativeSpace(sampleNormal, samplePosition);
+
+                uvs[vertIndex] = new Vector2(0, currentV);
+
+                // Assign triangle indicies.
+                triangleIndex = vertIndex * 3;
+                indicies[triangleIndex] = vertIndex;
+                indicies[triangleIndex + 1] = (vertIndex - 1 + sampleCount) % sampleCount;
+                indicies[triangleIndex + 2] = (vertIndex - 2 + sampleCount) % sampleCount;
             }
             else
             {
-                vertices[index] = SampleNormal(step, true);
-                step += roadStep;
-            }
+                // Assign vertex position.
+                verticies[vertIndex] = RelativeSpace(-sampleNormal, samplePosition);
 
-            int triangleIndex = index * 3;
-            triangles[triangleIndex] = index;
-            triangles[triangleIndex + 1] = (index + 1) % numVerts;
-            triangles[triangleIndex + 2] = (index + 2) % numVerts;
+                uvs[vertIndex] = new Vector2(1, currentV);
+
+                t += sampleStep;
+                currentV++;
+
+                // Assign triangle indicies.
+                triangleIndex = vertIndex * 3;
+                indicies[triangleIndex] = vertIndex;
+                indicies[triangleIndex + 1] = (vertIndex + 1) % sampleCount;
+                indicies[triangleIndex + 2] = (vertIndex + 2) % sampleCount;
+            }
         }
 
-        // Assign the new mesh data.
-        roadMesh.SetVertices(vertices);
-        roadMesh.SetTriangles(triangles, 0);
+        roadMesh.SetVertices(verticies);
+        roadMesh.SetTriangles(indicies, 0);
+
         roadMesh.RecalculateBounds();
         roadMesh.RecalculateNormals();
+        roadMesh.SetUVs(0, uvs);
 
-        // Return the resulting mesh.
         return roadMesh;
     }
 
-    public Vector3 SampleTangent(float step)
+    private Vector3 SampleSpline(float t)
     {
-        // Extrapolate the index given the step value.
-        int index = Mathf.FloorToInt(step);
+        int segmentIndex = Mathf.FloorToInt(Mathf.Clamp(t, 0, splineSegments.Length));
+        CatmullRomSegment segment = splineSegments[segmentIndex];
+        t %= 1.0f;
 
-        // Get the relevant spline segment.
-        CatmullRomSegment segment = segments[index];
-
-        // Calculate the tangent of the segment at the sample step.
-        Vector3 tangent = segment.b + (2 * segment.c * step) + (3 * segment.d * step * step);
-        tangent.Normalize();
-
-        // Return the resulting tangent vector.
-        return tangent;
+        return RelativeSpace(
+            segment.a +
+            segment.b * t +
+            segment.c * t * t +
+            segment.d * t * t * t,
+            transform.position
+        );
     }
 
-    private Vector3 SampleNormal(float step, bool flip)
+    private Vector2 SampleTangent(float t)
     {
-        // Calculate the normal vector as the cross porduct of the up vector and tangent.
-        Vector3 normal = Vector3.Cross(SampleTangent(step), Vector3.up);
+        int segmentIndex = Mathf.FloorToInt(Mathf.Clamp(t, 0, splineSegments.Length));
+        CatmullRomSegment segment = splineSegments[segmentIndex];
+        t %= 1.0f;
 
-        // Return the normal vector.
-        return SampleSpline(step) + (flip ? -normal : normal) * roadWidth;
+        return (
+            segment.b +
+            segment.c * 2 * t +
+            segment.d * 3 * t * t
+        ).normalized;
     }
 
-    private void OnValidate() => CacheSplineSegments();
+    private Vector2 SampleNormal(float t)
+    {
+        Vector2 tangent = SampleTangent(t);
+        return new Vector2(-tangent.y, tangent.x);
+    }
+
+    private void OnValidate() => CacheSplineConstants();
 
     private void OnDrawGizmosSelected()
     {
-        // Draw the influencing nodes.
         Gizmos.color = nodeColor;
-        foreach (Vector3 node in splineNodes)
+        foreach (Vector2 node in splineNodes)
         {
-            Gizmos.DrawSphere(transform.position + node, nodeRadius);
+            Gizmos.DrawSphere(RelativeSpace(node, transform.position), nodeRadius);
         }
 
-        // Draw a preview of the spline.
+        // Error checking to make sure a spline won't get stuck rendering.
+        if (sampleStep == 0) return;
+
+        // Draw a preview of the spline path.
         Gizmos.color = traceColor;
-        float step = traceStep;
-        Vector3 pointA = transform.position + splineNodes[0];
-        Vector3 pointB;
-        while (step <= splineNodes.Length)
+        float t = 0;
+        Vector3 pointA = RelativeSpace(splineNodes[0], transform.position), pointB;
+        while (t <= splineNodes.Length)
         {
-            pointB = SampleSpline(step);
+            pointB = SampleSpline(t);
             Gizmos.DrawLine(pointA, pointB);
             pointA = pointB;
-            step += traceStep;
+            t += sampleStep;
         }
     }
+
+    private Vector3 RelativeSpace(Vector2 point, Vector3 origin) => origin + new Vector3(point.x, 0, point.y);
 }
