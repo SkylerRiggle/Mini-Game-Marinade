@@ -14,6 +14,8 @@ public class ManualOverdrive : Game
     // The manager responsible for assigning the current road mesh.
     [SerializeField] private RoadManager roadManager = null;
 
+    [SerializeField] private PlayerMovement playerMovement = null;
+
     [Header("Difficulty Parameters:")]
     [SerializeField] private AnimationCurve difficultyCurve = null;
     [SerializeField] private float difficultyWeight = 0.01f;
@@ -27,12 +29,13 @@ public class ManualOverdrive : Game
 
     public override void StartGame()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("START GAME");
     }
 
     public override bool EndGame()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("END GAME");
+        return false;
     }
 
     public override void Load()
@@ -41,7 +44,7 @@ public class ManualOverdrive : Game
         gameAssetParent.SetActive(true);
 
         // Assign a random road mesh.
-        roadManager.AssignRoad();
+        playerMovement.roadSpline = roadManager.AssignRoad();
     }
 
     public override void UnLoad()

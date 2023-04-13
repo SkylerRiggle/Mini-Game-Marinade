@@ -2,24 +2,17 @@ using UnityEngine;
 
 public class RoadManager : MonoBehaviour
 {
-    private GameObject[] roads = new GameObject[0];
-    private int roadIndex = 0;
+    private RoadSpline[] roads = new RoadSpline[0];
+    private int roadIndex;
 
-    private void Awake()
-    {
-        GameObject[] newRoads = new GameObject[transform.childCount];
+    private void Awake() => roads = transform.GetComponentsInChildren<RoadSpline>(true);
 
-        for (int index = 0; index < newRoads.Length; index++)
-        {
-            newRoads[index] = transform.GetChild(index).gameObject;
-        }
-    }
-
-    public void AssignRoad()
+    public RoadSpline AssignRoad()
     {
         roadIndex = Random.Range(0, roads.Length);
-        roads[roadIndex].SetActive(true);
+        roads[roadIndex].gameObject.SetActive(true);
+        return roads[roadIndex];
     }
 
-    public void RemoveRoad() => roads[roadIndex].SetActive(false);
+    public void RemoveRoad() => roads[roadIndex].gameObject.SetActive(false);
 }
