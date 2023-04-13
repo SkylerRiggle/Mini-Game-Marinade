@@ -44,4 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffab30a9bdbc2e84284543f006304211, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableGames: []
+  availableGames:
+  - {fileID: 0}

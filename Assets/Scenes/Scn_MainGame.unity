@@ -254,16 +254,16 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 30
-      inSlope: -15.135516
-      outSlope: -15.135516
+      value: 3
+      inSlope: -0.1651507
+      outSlope: -0.1651507
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.0110516595
+      outWeight: 0.27064976
     - serializedVersion: 3
       time: 1
-      value: 20
+      value: 0
       inSlope: -0.0017532151
       outSlope: -0.0017532151
       tangentMode: 0
@@ -911,11 +911,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: GameManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 3635371099914376143, guid: 54ebb69b9c7d02d4aaca3588a317676a,
-        type: 3}
-      propertyPath: availableGames.Array.size
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3635371099914376143, guid: 54ebb69b9c7d02d4aaca3588a317676a,
         type: 3}
