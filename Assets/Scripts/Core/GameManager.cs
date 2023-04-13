@@ -25,6 +25,7 @@ public class GameManager : Singleton<GameManager>
     // Game Tracking Values
     [SerializeField] private Game[] availableGames = new Game[0];
     private Queue<int> gameQueue = new Queue<int>();
+    private int lastRandomIndex = 0;
     private Game currentGame;
 
     /// <summary>
@@ -50,11 +51,15 @@ public class GameManager : Singleton<GameManager>
         LoadNewGame();
     }
 
+    /// <summary>
+    /// Stores a random queue of game indicies such that the same game may never 
+    /// be played twice, and all games are played at least once in a queue.
+    /// </summary>
     private void GetGameQueue()
     {
-        // Initialize a random starting point and an offset.
-        int index = Random.Range(0, availableGames.Length);
+        // Initialize a random starting point from an incremental offset.
         int offset = Random.Range(1, availableGames.Length - 1);
+        int index = (lastRandomIndex + offset) % availableGames.Length;
 
         // Place the game indexes into the queue.
         for (int _i = 0; _i < availableGames.Length; _i++)
