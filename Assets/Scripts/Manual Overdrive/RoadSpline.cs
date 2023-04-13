@@ -79,7 +79,7 @@ public class RoadSpline : MonoBehaviour
         roadMesh.name = transform.name;
 
         // Generate the vertex, uv, and index arrays.
-        int sampleCount = 2 * Mathf.RoundToInt(splineNodes.Length / sampleStep);
+        int sampleCount = 2 * (Mathf.RoundToInt(splineNodes.Length / sampleStep) + 1);
         Vector3[] verticies = new Vector3[sampleCount];
         Vector2[] uvs = new Vector2[sampleCount];
         int[] indicies = new int[sampleCount * 3];
