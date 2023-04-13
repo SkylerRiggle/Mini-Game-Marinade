@@ -99,10 +99,13 @@ public class GameManager : Singleton<GameManager>
         // Gather a new game from the queue.
         currentGame = availableGames[0];
 
+        // Store the default run time for the new game.
+        _currentTime = currentGame.GetGameTime(gamesCompleted);
+
         // Start the game and the timer.
         currentGame.Load();
         currentGame.StartGame();
-        currentGameTimer = StartCoroutine(GameTimer(currentGame.GetGameTime(gamesCompleted)));
+        currentGameTimer = StartCoroutine(GameTimer());
     }
 
     /// <summary>
@@ -144,12 +147,8 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// Handles the timer for the current game.
     /// </summary>
-    /// <param name="runTime">The initial start time for the game.</param>
-    private IEnumerator GameTimer(int runTime)
+    private IEnumerator GameTimer()
     {
-        // Start the timer with the default value.
-        _currentTime = runTime;
-        
         // Decrement the timer till it reads zero or less.
         while (_currentTime > 0)
         {
