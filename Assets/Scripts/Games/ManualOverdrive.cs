@@ -29,12 +29,12 @@ public class ManualOverdrive : Game
 
     public override void StartGame()
     {
-        Debug.Log("START GAME");
+        playerMovement.SetMovement(true);
     }
 
     public override bool EndGame()
     {
-        Debug.Log("END GAME");
+        playerMovement.SetMovement(false);
         return false;
     }
 

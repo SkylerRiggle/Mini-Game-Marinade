@@ -153,7 +153,6 @@ Transform:
   m_Children:
   - {fileID: 153827997}
   - {fileID: 761475211}
-  - {fileID: 943062831}
   - {fileID: 1448188452}
   m_Father: {fileID: 1880025202}
   m_RootOrder: 1
@@ -256,7 +255,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 3
+      value: 30
       inSlope: -0.1651507
       outSlope: -0.1651507
       tangentMode: 0
@@ -490,55 +489,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &943062830
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 943062831}
-  - component: {fileID: 943062832}
-  m_Layer: 0
-  m_Name: Post Processing
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &943062831
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 943062830}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 69185256}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &943062832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 943062830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IsGlobal: 1
-  priority: 0
-  blendDistance: 0
-  weight: 1
-  sharedProfile: {fileID: 11400000, guid: 538964e0965ce2a41aeb1251f7607e28, type: 2}
 --- !u!1 &991850427
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,15 +629,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00696e30885921049a19d109759d4b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tension: 1
-  sampleStep: 0.1
-  roadRadius: 1
   splineNodes:
   - {x: -2.56, y: -1.26}
   - {x: 8.4, y: 21.98}
   - {x: 28.31, y: -3}
   - {x: 10, y: -14.7}
   - {x: 3.54, y: -8}
+  tension: 1
+  sampleStep: 0.1
+  roadRadius: 1
   nodeRadius: 0.25
   nodeColor: {r: 1, g: 0, b: 0, a: 1}
   traceColor: {r: 0, g: 1, b: 0, a: 1}
@@ -722,7 +672,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 69185256}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1448188454
 MeshRenderer:
@@ -971,15 +921,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00696e30885921049a19d109759d4b12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tension: 1
-  sampleStep: 0.1
-  roadRadius: 1
   splineNodes:
   - {x: -10, y: -3}
   - {x: 0, y: 5}
   - {x: 15, y: -3}
   - {x: 10, y: -8}
   - {x: 0, y: -8}
+  tension: 1
+  sampleStep: 0.1
+  roadRadius: 1
   nodeRadius: 0.25
   nodeColor: {r: 1, g: 0, b: 0, a: 1}
   traceColor: {r: 0, g: 1, b: 0, a: 1}

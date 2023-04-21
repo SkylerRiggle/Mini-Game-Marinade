@@ -136,7 +136,7 @@ public class RoadSpline : MonoBehaviour
 
     public Vector3 SampleSpline(float t)
     {
-        int segmentIndex = Mathf.FloorToInt(Mathf.Clamp(t, 0, splineSegments.Length));
+        int segmentIndex = Mathf.FloorToInt(t % splineSegments.Length);
         CatmullRomSegment segment = splineSegments[segmentIndex];
         t %= 1.0f;
 
@@ -156,7 +156,7 @@ public class RoadSpline : MonoBehaviour
 
     private Vector2 SampleTangent(float t)
     {
-        int segmentIndex = Mathf.FloorToInt(Mathf.Clamp(t, 0, splineSegments.Length));
+        int segmentIndex = Mathf.FloorToInt(t % splineSegments.Length);
         CatmullRomSegment segment = splineSegments[segmentIndex];
         t %= 1.0f;
 
