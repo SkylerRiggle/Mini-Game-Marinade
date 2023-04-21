@@ -43,8 +43,8 @@ public class ManualOverdrive : Game
         // Enable our game's assets.
         gameAssetParent.SetActive(true);
 
-        // Assign a random road mesh.
-        playerMovement.roadSpline = roadManager.AssignRoad();
+        // Assign a random road mesh and bind the player to it.
+        playerMovement.SetDefaultPosition(roadManager.AssignRoad());
     }
 
     public override void UnLoad()

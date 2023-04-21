@@ -22,13 +22,14 @@ public struct CatmullRomSegment
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class RoadSpline : MonoBehaviour 
 {
+    [Header("Road Parameters:")]
+    [SerializeField] private Vector2[] splineNodes = new Vector2[0];
     [SerializeField] private float tension = 0.5f;
     [SerializeField] private float sampleStep = 0.1f;
     private CatmullRomSegment[] splineSegments;
     [SerializeField] private float roadRadius = 1;
 
     [Header("Gizmo Parameters:")]
-    [SerializeField] private Vector2[] splineNodes = new Vector2[0];
     [SerializeField] private float nodeRadius = 0.25f;
     [SerializeField] private Color nodeColor = Color.red;
     [SerializeField] private Color traceColor = Color.green;
@@ -133,7 +134,7 @@ public class RoadSpline : MonoBehaviour
         return roadMesh;
     }
 
-    private Vector3 SampleSpline(float t)
+    public Vector3 SampleSpline(float t)
     {
         int segmentIndex = Mathf.FloorToInt(Mathf.Clamp(t, 0, splineSegments.Length));
         CatmullRomSegment segment = splineSegments[segmentIndex];
@@ -146,6 +147,11 @@ public class RoadSpline : MonoBehaviour
             segment.d * t * t * t,
             transform.position
         );
+    }
+
+    public Vector3 SampleTangent3D(float t)
+    {
+        return RelativeSpace(SampleTangent(t), Vector3.zero);
     }
 
     private Vector2 SampleTangent(float t)
