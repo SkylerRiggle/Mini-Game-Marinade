@@ -11,6 +11,9 @@ public class ManualOverdrive : Game
     // This parent game object holds all of this game's non-managerial assets.
     [SerializeField] private GameObject gameAssetParent = null;
 
+    // This parent game object holds all of this game's UI components.
+    [SerializeField] private GameObject gameUIParent = null;
+
     // The manager responsible for assigning the current road mesh.
     [SerializeField] private RoadManager roadManager = null;
 
@@ -35,13 +38,14 @@ public class ManualOverdrive : Game
     public override bool EndGame()
     {
         playerMovement.SetMovement(false);
-        return false;
+        return true;
     }
 
     public override void Load()
     {
         // Enable our game's assets.
         gameAssetParent.SetActive(true);
+        gameUIParent.SetActive(true);
 
         // Assign a random road mesh and bind the player to it.
         playerMovement.SetDefaultPosition(roadManager.AssignRoad());
@@ -54,5 +58,6 @@ public class ManualOverdrive : Game
 
         // Disable our game's assets.
         gameAssetParent.SetActive(false);
+        gameUIParent.SetActive(false);
     }
 }

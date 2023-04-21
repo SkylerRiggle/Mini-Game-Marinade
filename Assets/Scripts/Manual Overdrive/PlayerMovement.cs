@@ -6,10 +6,11 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour 
 {
     private Transform cameraTransform;
-    [SerializeField] private Vector3 cameraOffset = Vector3.zero;
+    [SerializeField] private float cameraYOffset = 0.5f;
+    [SerializeField] private float smoothing = 2;
 
     private RoadSpline roadSpline;
-    private const float START_SPEED = 0.1f;
+    private const float START_SPEED = 1f;
     private float currentPosition = 0, currentSpeed = START_SPEED;
     private bool canMove = false;
 
@@ -22,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
         if (canMove)
         {
             currentPosition += currentSpeed * Time.deltaTime;
-            UpdatePosition();
+            UpdatePosition(smoothing * Time.deltaTime);
         }
     }
 
@@ -31,24 +32,17 @@ public class PlayerMovement : MonoBehaviour
         roadSpline = newRoad;
         currentPosition = 0;
         currentSpeed = START_SPEED;
-        UpdatePosition();
+        UpdatePosition(1);
     }
 
-    private void UpdatePosition()
+    private void UpdatePosition(float currentSmoothing)
     {
         // Sample the road.
         Vector3 samplePoint = roadSpline.SampleSpline(currentPosition);
         Vector3 currentRoadTangent = roadSpline.SampleTangent3D(currentPosition);
 
-        // Set the player's position and rotation values.
-        transform.position = samplePoint;
-        transform.forward = currentRoadTangent;
-
         // Set the camera's position and rotation values.
-        cameraTransform.forward = currentRoadTangent;
-        cameraTransform.position = transform.position + 
-            (transform.right * cameraOffset.x) +
-            (transform.up * cameraOffset.y) +
-            (transform.forward * cameraOffset.z);
+        cameraTransform.forward = Vector3.Lerp(cameraTransform.forward, currentRoadTangent, currentSmoothing);
+        cameraTransform.position = Vector3.Lerp(cameraTransform.position, samplePoint + (Vector3.up * cameraYOffset), currentSmoothing);
     }
 }
