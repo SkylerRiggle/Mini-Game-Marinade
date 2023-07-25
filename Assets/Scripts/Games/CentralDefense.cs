@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// Flick the joystick to fire in that direction to defend against enemies!
+/// </summary>
 public class CentralDefense : Game
 {
     [SerializeField] private GameObject gameAssetParent = null;
@@ -49,6 +52,8 @@ public class CentralDefense : Game
         // Reset conditions
         gameStarted = false;
         hasLost = false;
+
+        StartGame();
     }
 
     public override void UnLoad()
@@ -64,7 +69,22 @@ public class CentralDefense : Game
 
     private void Update()
     {
-        
+        if (gameStarted)
+        {
+            // Decrease timer while game is running
+            timer -= Time.deltaTime;
+            timeText.text = Mathf.Ceil(timer).ToString();
+            if (timer < 0)
+            {
+                gameStarted = false;
+                
+                // If player has not lost when time is up, trigger win
+                if (!hasLost)
+                {
+                    onWin?.Invoke();
+                }
+            }
+        }
     }
 
     IEnumerator IntroSequence()

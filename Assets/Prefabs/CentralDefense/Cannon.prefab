@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7295241043941442049}
   - component: {fileID: 7123821851017700421}
   - component: {fileID: 3910259316036687049}
+  - component: {fileID: 4662068729088342466}
+  - component: {fileID: 5954742568021142350}
   m_Layer: 0
   m_Name: Cannon
   m_TagString: Player
@@ -149,4 +151,52 @@ MonoBehaviour:
   projectile: {fileID: 5316636676348566297, guid: a95ba0239adf4b746a6a3ec8f86f1d6b,
     type: 3}
   explosion: {fileID: 8300000, guid: c8d76f54582ebba4d940f8c4cbfd31af, type: 3}
-  onLose: {fileID: 0}
+  onLose: {fileID: 11400000, guid: 1912a5fe449488e49af4ed721f9931c2, type: 2}
+--- !u!114 &4662068729088342466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097406811230755003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c321483b91b1564282e98b171a62615, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 5935e94725644d7489dce197a4d8b9fa, type: 2}
+  unityEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3910259316036687049}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!95 &5954742568021142350
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097406811230755003}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: aa927261b7ddbfa45b44cffbdbed4cac, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
